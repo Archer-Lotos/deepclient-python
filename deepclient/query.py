@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
 from gql import gql
 
+
 def generate_query_data(options: Dict[str, Any]) -> Any:
     def inner(alias: str, index: int) -> Dict[str, Any]:
         defs = []
@@ -53,6 +54,7 @@ def fields_inputs(table_name: str) -> Dict[str, str]:
         "where": f"{table_name}_bool_exp!",
     }
 
+
 def generate_query(options: Dict[str, Union[str, List[Any]]]) -> Dict[str, Any]:
     queries = options.get("queries", [])
     operation = options.get("operation", "query")
@@ -61,7 +63,9 @@ def generate_query(options: Dict[str, Union[str, List[Any]]]) -> Dict[str, Any]:
 
     called_queries = [m(alias, i) if callable(m) else m for i, m in enumerate(queries)]
     defs = ",".join([",".join(m["defs"]) for m in called_queries])
-    query_body = ','.join([f'{m["resultAlias"]}: {m["queryName"]}({",".join(m["args"])}) {{ {m["resultReturning"]} }}' for m in called_queries])
+    query_body = ','.join(
+        [f'{m["resultAlias"]}: {m["queryName"]}({",".join(m["args"])}) {{ {m["resultReturning"]} }}' for m in
+         called_queries])
     query_string = f"{operation} {name} ({defs}) {{{query_body}}}"
     query = gql(query_string)
 

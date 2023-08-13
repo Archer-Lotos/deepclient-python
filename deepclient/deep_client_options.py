@@ -1,5 +1,6 @@
 from typing import Any
 
+
 class DeepClientOptions:
     def __init__(self, gql_client: Any = None,
                  table: str = 'links',
@@ -17,5 +18,5 @@ class DeepClientOptions:
         self.values_select_returning = values_select_returning
         self.selectors_select_returning = selectors_select_returning
         self.files_select_returning = files_select_returning
-        
+
         self.default_select_name = default_select_name

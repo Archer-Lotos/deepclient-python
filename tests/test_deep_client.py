@@ -6,6 +6,7 @@ from deepclient import DeepClient, DeepClientOptions
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
 
+
 class TestDeepClient(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
@@ -52,9 +53,11 @@ class TestDeepClient(unittest.IsolatedAsyncioTestCase):
         assert self.client.serialize_where({"string": "a"}) == {"string": {"value": {"_eq": "a"}}}
         assert self.client.serialize_where({"number": {"value": {"_eq": 5}}}) == {"number": {"value": {"_eq": 5}}}
         assert self.client.serialize_where({"string": {"value": {"_eq": "a"}}}) == {"string": {"value": {"_eq": "a"}}}
-        assert self.client.serialize_where({"object": {"value": {"_contains": {"a": "b"}}}}) == {"object": {"value": {"_contains": {"a": "b"}}}}
+        assert self.client.serialize_where({"object": {"value": {"_contains": {"a": "b"}}}}) == {
+            "object": {"value": {"_contains": {"a": "b"}}}}
         assert self.client.serialize_where({"value": "a"}) == {"string": {"value": {"_eq": "a"}}}
-        assert self.client.serialize_where({ "from": { "type_id": 2, "value": "a" } }) == { "from": { "type_id": {"_eq": 2}, "string": {"value": {"_eq": "a"}} }}
+        assert self.client.serialize_where({"from": {"type_id": 2, "value": "a"}}) == {
+            "from": {"type_id": {"_eq": 2}, "string": {"value": {"_eq": "a"}}}}
 
         assert self.client.serialize_where({
             "out": {
@@ -66,15 +69,15 @@ class TestDeepClient(unittest.IsolatedAsyncioTestCase):
                 },
             },
         }) == {
-            "out": {
-                "type_id": {"_eq": 3},
-                "string": {"value": {"_eq": "b"}},
-                "from": {
-                    "type_id": {"_eq": 2},
-                    "string": {"value": {"_eq": "a"}},
-                },
-            }
-        }
+                   "out": {
+                       "type_id": {"_eq": 3},
+                       "string": {"value": {"_eq": "b"}},
+                       "from": {
+                           "type_id": {"_eq": 2},
+                           "string": {"value": {"_eq": "a"}},
+                       },
+                   }
+               }
 
         assert self.client.serialize_where({"value": 5, "link": {"type_id": 7}}, "value") == {
             "value": {"_eq": 5},
@@ -96,40 +99,47 @@ class TestDeepClient(unittest.IsolatedAsyncioTestCase):
             },
         }
 
-        assert self.client.serialize_where({"_or": [{"type": ["@deep-foundation/core", "Value"]}, {"type": ["@deep-foundation/core", "User"]}]}) == {
-            "_or": [{
-                "type": {
-                    "in": {
-                        "from": {
-                            "string": {"value": {"_eq": "@deep-foundation/core"}},
-                            "type_id": {"_eq": 2},
-                        },
-                        "string": {"value": {"_eq": "Value"}},
-                        "type_id": {"_eq": 3},
-                    },
-                },
-            }, {
-                "type": {
-                    "in": {
-                        "from": {
-                            "string": {"value": {"_eq": "@deep-foundation/core"}},
-                            "type_id": {"_eq": 2},
-                        },
-                        "string": {"value": {"_eq": "User"}},
-                        "type_id": {"_eq": 3},
-                    },
-                },
-            }]
-        }
+        assert self.client.serialize_where(
+            {"_or": [{"type": ["@deep-foundation/core", "Value"]}, {"type": ["@deep-foundation/core", "User"]}]}) == {
+                   "_or": [{
+                       "type": {
+                           "in": {
+                               "from": {
+                                   "string": {"value": {"_eq": "@deep-foundation/core"}},
+                                   "type_id": {"_eq": 2},
+                               },
+                               "string": {"value": {"_eq": "Value"}},
+                               "type_id": {"_eq": 3},
+                           },
+                       },
+                   }, {
+                       "type": {
+                           "in": {
+                               "from": {
+                                   "string": {"value": {"_eq": "@deep-foundation/core"}},
+                                   "type_id": {"_eq": 2},
+                               },
+                               "string": {"value": {"_eq": "User"}},
+                               "type_id": {"_eq": 3},
+                           },
+                       },
+                   }]
+               }
 
-        assert self.client.serialize_where({"type_id": {"_type_of": 25}}) == {"type": {"_by_item": {"path_item_id": {"_eq": 25}, "group_id": {"_eq": 0}}}}
-        assert self.client.serialize_where({"from_id": {"_type_of": 25}}) == {"from": {"_by_item": {"path_item_id": {"_eq": 25}, "group_id": {"_eq": 0}}}}
-        assert self.client.serialize_where({"to_id": {"_type_of": 25}}) == {"to": {"_by_item": {"path_item_id": {"_eq": 25}, "group_id": {"_eq": 0}}}}
+        assert self.client.serialize_where({"type_id": {"_type_of": 25}}) == {
+            "type": {"_by_item": {"path_item_id": {"_eq": 25}, "group_id": {"_eq": 0}}}}
+        assert self.client.serialize_where({"from_id": {"_type_of": 25}}) == {
+            "from": {"_by_item": {"path_item_id": {"_eq": 25}, "group_id": {"_eq": 0}}}}
+        assert self.client.serialize_where({"to_id": {"_type_of": 25}}) == {
+            "to": {"_by_item": {"path_item_id": {"_eq": 25}, "group_id": {"_eq": 0}}}}
 
     async def test_select(self):
-        assert (await self.client.select(1))['data'][0] == {'id': 1, 'type_id': 1, 'from_id': 8, 'to_id': 8, 'value': None}
-        assert (await self.client.select({ "id": 1 }))['data'][0] == {'id': 1, 'type_id': 1, 'from_id': 8, 'to_id': 8, 'value': None}
-        assert (await self.client.select({ "id": { "_eq": 1 } }))['data'][0] == {'id': 1, 'type_id': 1, 'from_id': 8, 'to_id': 8, 'value': None}
+        assert (await self.client.select(1))['data'][0] == {'id': 1, 'type_id': 1, 'from_id': 8, 'to_id': 8,
+                                                            'value': None}
+        assert (await self.client.select({"id": 1}))['data'][0] == {'id': 1, 'type_id': 1, 'from_id': 8, 'to_id': 8,
+                                                                    'value': None}
+        assert (await self.client.select({"id": {"_eq": 1}}))['data'][0] == {'id': 1, 'type_id': 1, 'from_id': 8,
+                                                                             'to_id': 8, 'value': None}
 
     async def test_insert(self):
         new_record = {"type_id": 58, "from_id": 0, "to_id": 0}
@@ -146,7 +156,6 @@ class TestDeepClient(unittest.IsolatedAsyncioTestCase):
         new_record2 = {"type_id": 59, "from_id": 0, "to_id": 0}
         record_list = [new_record, new_record2]
         insert_result = await self.client.insert(record_list)
-
 
     async def test_delete(self):
         new_record = {"type_id": 58, "from_id": 0, "to_id": 0}
