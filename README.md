@@ -6,7 +6,7 @@ Deep Client - a way to connect your favourite language with Deep.
 ## Install dependencies
 
 ```
-( cd python && pip install -r requirements.txt )
+pip install -r requirements.txt
 ```
 
 ## Running Tests
@@ -14,5 +14,6 @@ Deep Client - a way to connect your favourite language with Deep.
 To run the test suite, execute the following commands from the root directory of the project:
 
 ```
-( cd python && python -m unittest discover -s tests -v )
+python -m unittest discover -s tests -v
+python -m unittest tests.test_select.TestDeepClientSelect.testSelect
 ```

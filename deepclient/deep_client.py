@@ -445,6 +445,8 @@ class DeepClient:
             "name": name,
         })
 
+        # print(generated_query)
+
         q = await self.client.execute_async(generated_query['query'], variable_values=generated_query['variables'])
         data = q.get("q0", [])
         del q["q0"]
